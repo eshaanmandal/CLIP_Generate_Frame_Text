@@ -17,7 +17,7 @@ IMAGENET_CLASS_PATH = './utils/IN_label_map.txt'
 KINETICS_CLASS_PATH = './utils/K400_label_map.txt'
 
 
-def show_predictions_on_dataset(logits: torch.FloatTensor, dataset: Union[str, List]):
+def show_predictions_on_dataset(logits: torch.FloatTensor, dataset: Union[str, List], video_name):
     '''Prints out predictions for each feature
 
     Args:
@@ -37,18 +37,20 @@ def show_predictions_on_dataset(logits: torch.FloatTensor, dataset: Union[str, L
     softmaxes = F.softmax(logits, dim=-1)
     top_val, top_idx = torch.sort(softmaxes, dim=-1, descending=True)
 
-    k = 5
+    k = 1
     logits_score = logits.gather(1, top_idx[:, :k]).tolist()
     softmax_score = softmaxes.gather(1, top_idx[:, :k]).tolist()
     class_labels = [[dataset_classes[idx] for idx in i_row] for i_row in top_idx[:, :k]]
 
-    for b in range(len(logits)):
-        # header
-        print('  Logits | Prob. | Label ')
-        for (logit, smax, cls) in zip(logits_score[b], softmax_score[b], class_labels[b]):
-            # rows
-            print(f'{logit:8.3f} | {smax:.3f} | {cls}')
-        print()
+    with open(f"/content/drive/MyDrive/text_preds/{video_name.split('.')[0]}.txt", "a") as f:
+      for b in range(len(logits)):
+          # header
+          # print('  Logits | Prob. | Label ')
+          for (logit, smax, cls) in zip(logits_score[b], softmax_score[b], class_labels[b]):
+              # rows
+              f.writelines(f'{logit:8.3f} | {smax:.3f} | {cls}')
+              # print(f'{logit:8.3f} | {smax:.3f} | {cls}')
+          # print()
 
 def make_path(output_root, video_path, output_key, ext):
     # extract file name and change the extention
