@@ -83,7 +83,7 @@ class ExtractCLIP(BaseFrameWiseExtractor):
             'model.logit_scale': model.logit_scale,
         }
 
-    def maybe_show_pred(self, visual_feats: torch.Tensor, video_name):
+    def maybe_show_pred(self, visual_feats: torch.Tensor):
         # for each batch we will compute text representation: it is a bit redundant but it only
         # creates a problem during `show_pred`, i.e. debugging. It is not a big deal
         if self.show_pred:
@@ -105,4 +105,4 @@ class ExtractCLIP(BaseFrameWiseExtractor):
 
             # probs = logits_per_image.softmax(dim=-1).cpu().numpy()  # T, N
 
-            show_predictions_on_dataset(logits, self.pred_texts, video_name)
+            show_predictions_on_dataset(logits, self.pred_texts)
